@@ -1,17 +1,32 @@
-#FROM golang:1.19
-FROM golang:1.22
-#as builder
+FROM golang:${GO_VERSION} AS builder
 
+# Set work directory
 WORKDIR /app
 
-COPY go.mod main.go ./
+# Copy go mod and sum files
+COPY go.mod go.sum ./
 
-#RUN GOOS=linux GOARCH=amd64 go build \
+# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+RUN go mod download
+
+# Copy the source from the current directory to the work Directory inside the container
+COPY . .
+
+# Build the Go app
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
-RUN chmod u+x /app/main
-#FROM scratch
 
-#COPY --from=builder /app/main /main
-#RUN chmod u+x /main
+######## Start a new stage from scratch #######
+FROM alpine:latest
 
-ENTRYPOINT ["/app/main"]
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+# Copy the Pre-built binary file from the previous stage
+COPY --from=builder /app/main .
+
+# Expose port 8080 to the outside
+EXPOSE 8080
+
+# Command to run the executable
+CMD ["./main"]
