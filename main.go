@@ -11,7 +11,7 @@ func main() {
 	size, _ := strconv.Atoi(GetEnv("MEM_SIZE", "1"))
 	fmt.Println("Allocating ", size, " MB ram...")
 	allocateMem(size)
-	time.Sleep(time.Duration(30) * time.Minute)
+	time.Sleep(time.Duration(30) * time.Second)
 	fmt.Println("Done")
 }
 
