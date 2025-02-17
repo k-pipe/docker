@@ -1,4 +1,4 @@
-package memtestpackage
+package main
 
 import (
 	"fmt"
