@@ -7,7 +7,7 @@ WORKDIR /app
 COPY go.mod main.go ./
 
 #RUN GOOS=linux GOARCH=amd64 go build \
-RUN GOOS=linux go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main . \
 RUN chmod u+x /app/main
 #FROM scratch
 
