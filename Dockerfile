@@ -1,3 +1,6 @@
+# Set buildtime environment variable for architecture
+ARG TARGETARCH
+
 # Start from the latest golang base image
 FROM golang:1.22-alpine as builder
 
@@ -14,12 +17,12 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o main .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH:-amd64} go build -a -installsuffix cgo -o main .
 
 ######## Start a new stage from scratch #######
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates
+#RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
